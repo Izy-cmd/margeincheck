@@ -2143,137 +2143,249 @@
     <!-- ================================================================
     JAVASCRIPT
     ================================================================ -->
-    <script>
-        (function() {
-            'use strict';
+   <script>
+    (function() {
+        'use strict';
 
-            // ---- TAB SWITCHING ----
-            const pages = {
-                dashboard: document.getElementById('page-dashboard'),
-                history: document.getElementById('page-history'),
-                settings: document.getElementById('page-settings')
-            };
-            const navLinks = document.querySelectorAll('.nav-link');
+        // ---- TAB SWITCHING ----
+        const pages = {
+            dashboard: document.getElementById('page-dashboard'),
+            history: document.getElementById('page-history'),
+            settings: document.getElementById('page-settings')
+        };
+        const navLinks = document.querySelectorAll('.nav-link');
 
-            function switchTab(tab) {
-                Object.keys(pages).forEach(key => {
-                    pages[key].style.display = (key === tab) ? 'block' : 'none';
-                });
-                navLinks.forEach(link => {
-                    link.classList.toggle('active', link.dataset.page === tab);
-                });
-                document.getElementById('mainFooter').style.display = (tab === 'dashboard') ? 'grid' : 'none';
-            }
-            window.switchTab = switchTab;
-
+        function switchTab(tab) {
+            Object.keys(pages).forEach(key => {
+                pages[key].style.display = (key === tab) ? 'block' : 'none';
+            });
             navLinks.forEach(link => {
-                link.addEventListener('click', function() {
-                    switchTab(this.dataset.page);
+                link.classList.toggle('active', link.dataset.page === tab);
+            });
+            document.getElementById('mainFooter').style.display = (tab === 'dashboard') ? 'grid' : 'none';
+        }
+        window.switchTab = switchTab;
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                switchTab(this.dataset.page);
+            });
+        });
+
+        // ---- ANALYSE AVEC LA VRAIE API (ScrapingBee) ----
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const urlInput = document.getElementById('urlInput');
+        const resultsCard = document.getElementById('resultsCard');
+        const timestampEl = document.getElementById('timestamp');
+
+        const resCost = document.getElementById('resCost');
+        const resShipping = document.getElementById('resShipping');
+        const resFees = document.getElementById('resFees');
+        const resAdspend = document.getElementById('resAdspend');
+        const resGross = document.getElementById('resGross');
+        const resNet = document.getElementById('resNet');
+        const resBreakeven = document.getElementById('resBreakeven');
+        const verdictBadge = document.getElementById('verdictBadge');
+
+        const thresholdGo = document.getElementById('thresholdGo');
+        const thresholdPrudent = document.getElementById('thresholdPrudent');
+        const adSpendRatio = document.getElementById('adSpendRatio');
+        const platformFee = document.getElementById('platformFee');
+        const platformFeeFixed = document.getElementById('platformFeeFixed');
+
+        let analysisCount = 0;
+
+        function runAnalysis(url) {
+            analyzeBtn.disabled = true;
+            analyzeBtn.innerHTML = '<span class="spinner"></span> Analyzing...';
+
+            // Appel à la VRAIE API (le scraper)
+            fetch(`/api/scrape?url=${encodeURIComponent(url)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erreur serveur: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (!data.success) {
+                        alert('Erreur: ' + (data.error || 'Impossible de récupérer le produit.'));
+                        analyzeBtn.disabled = false;
+                        analyzeBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Analyze';
+                        return;
+                    }
+
+                    const productPrice = parseFloat(data.product.price) || 10;
+                    const productName = data.product.title || 'Produit AliExpress';
+
+                    // ---- Calculs de rentabilité ----
+                    const shipping = (Math.random() * 8 + 2).toFixed(2);
+                    const platformFeeVal = parseFloat(thresholdGo.value) || 2.9; // fallback
+                    const platformFeeFixedVal = parseFloat(platformFeeFixed?.value) || 0.30;
+                    const adSpendRatioVal = parseFloat(adSpendRatio?.value) || 30;
+
+                    const sellingPrice = (productPrice * 2.5 + parseFloat(shipping)).toFixed(2);
+                    const platformFeeAmount = (parseFloat(sellingPrice) * platformFeeVal / 100) + platformFeeFixedVal;
+                    const adSpendAmount = parseFloat(sellingPrice) * adSpendRatioVal / 100;
+                    const totalCost = productPrice + parseFloat(shipping) + platformFeeAmount + adSpendAmount;
+
+                    const grossMargin = ((parseFloat(sellingPrice) - productPrice - parseFloat(shipping)) / parseFloat(sellingPrice) * 100);
+                    const netMargin = ((parseFloat(sellingPrice) - totalCost) / parseFloat(sellingPrice) * 100);
+                    const breakEven = Math.ceil(100 / (netMargin / 100 * parseFloat(sellingPrice)));
+
+                    const goThreshold = parseFloat(thresholdGo?.value) || 30;
+                    const prudentThreshold = parseFloat(thresholdPrudent?.value) || 15;
+                    let verdict = 'PRUDENT', verdictClass = 'prudent';
+                    if (netMargin >= goThreshold) { verdict = 'GO'; verdictClass = 'go'; } 
+                    else if (netMargin < prudentThreshold) { verdict = 'PASS'; verdictClass = 'pass'; }
+
+                    // Mise à jour des affichages
+                    if (resCost) resCost.textContent = '$' + productPrice.toFixed(2);
+                    if (resShipping) resShipping.textContent = '$' + shipping;
+                    if (resFees) resFees.textContent = '$' + platformFeeAmount.toFixed(2);
+                    if (resAdspend) resAdspend.textContent = '$' + adSpendAmount.toFixed(2);
+                    if (resGross) {
+                        resGross.textContent = grossMargin.toFixed(0) + '%';
+                        resGross.className = 'value ' + (grossMargin >= 40 ? 'green' : grossMargin >= 20 ? 'orange' : 'red');
+                    }
+                    if (resNet) {
+                        resNet.textContent = netMargin.toFixed(0) + '%';
+                        resNet.className = 'value ' + (netMargin >= goThreshold ? 'green' : netMargin >= prudentThreshold ? 'orange' : 'red');
+                    }
+                    if (resBreakeven) resBreakeven.textContent = breakEven + ' units';
+
+                    if (verdictBadge) {
+                        verdictBadge.textContent = verdict;
+                        verdictBadge.className = 'verdict-badge ' + verdictClass;
+                    }
+
+                    const now = new Date();
+                    if (timestampEl) timestampEl.textContent = now.toLocaleString('en-US', { hour12: false });
+                    if (resultsCard) resultsCard.classList.add('active');
+
+                    // Ajout à l'historique
+                    const historyBody = document.getElementById('historyBody');
+                    if (historyBody && historyBody.querySelector('td[colspan]')) {
+                        historyBody.innerHTML = '';
+                    }
+                    if (historyBody) {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td style="padding:10px 16px;border-bottom:1px solid #E9EDF2;">${productName.substring(0,30)}...</td>
+                            <td style="padding:10px 16px;border-bottom:1px solid #E9EDF2;">$${productPrice.toFixed(2)}</td>
+                            <td style="padding:10px 16px;border-bottom:1px solid #E9EDF2;">${netMargin.toFixed(0)}%</td>
+                            <td style="padding:10px 16px;border-bottom:1px solid #E9EDF2;"><span style="background:${verdictClass === 'go' ? '#00A86B' : verdictClass === 'prudent' ? '#E68A00' : '#E53E3E'};color:#FFF;padding:2px 12px;border-radius:30px;font-size:12px;">${verdict}</span></td>
+                        `;
+                        historyBody.prepend(row);
+                        while (historyBody.children.length > 10) {
+                            historyBody.removeChild(historyBody.lastChild);
+                        }
+                    }
+
+                    analysisCount++;
+                    if (analysisCount >= 5) {
+                        const hint = document.querySelector('.hint-text');
+                        if (hint) hint.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:#E68A00;"></i> You used your 5 free analyses. Upgrade to unlimited!';
+                    }
+
+                    analyzeBtn.disabled = false;
+                    analyzeBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Analyze';
+                })
+                .catch(error => {
+                    alert('Erreur de connexion au serveur: ' + error.message);
+                    analyzeBtn.disabled = false;
+                    analyzeBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Analyze';
                 });
-            });
+        }
 
-            // ---- SIMULATED ANALYSIS ----
-            const analyzeBtn = document.getElementById('analyzeBtn');
-            const urlInput = document.getElementById('urlInput');
+        // ---- ÉVÉNEMENT ANALYSE ----
+        analyzeBtn.addEventListener('click', function() {
+            const url = urlInput.value.trim();
+            if (!url) { alert('Please paste an AliExpress URL.'); return; }
+            if (!url.startsWith('http://') && !url.startsWith('https://')) { alert('Invalid URL.'); return; }
+            if (analysisCount >= 5) { alert('You used your 5 free analyses. Please upgrade to continue.'); return; }
+            runAnalysis(url);
+        });
 
-            analyzeBtn.addEventListener('click', function() {
-                const url = urlInput.value.trim();
-                if (!url) { alert('Please paste an AliExpress URL.'); return; }
-                if (!url.startsWith('http://') && !url.startsWith('https://')) { alert('Invalid URL.'); return; }
+        urlInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') analyzeBtn.click();
+        });
 
-                const verdicts = ['GO', 'PRUDENT', 'PASS'];
-                const colors = ['#00A86B', '#E68A00', '#E53E3E'];
-                const rand = Math.floor(Math.random() * 3);
-                const margin = (Math.random() * 40 + 10).toFixed(0);
-                const price = (Math.random() * 30 + 5).toFixed(2);
-
-                alert('✅ Analysis complete!\nProduct: ' + url.substring(0, 40) + '...\nSupplier price: $' + price +
-                    '\nNet margin: ' + margin + '%\nVerdict: ' + verdicts[rand]);
-
-                // Add to history
-                const historyBody = document.getElementById('historyBody');
-                if (historyBody.querySelector('td[colspan]')) {
-                    historyBody.innerHTML = '';
-                }
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td style="padding:10px 16px;border-bottom:1px solid #E9EDF2;">${url.substring(0,30)}...</td>
-                    <td style="padding:10px 16px;border-bottom:1px solid #E9EDF2;">$${price}</td>
-                    <td style="padding:10px 16px;border-bottom:1px solid #E9EDF2;">${margin}%</td>
-                    <td style="padding:10px 16px;border-bottom:1px solid #E9EDF2;"><span style="background:${colors[rand]};color:#FFF;padding:2px 12px;border-radius:30px;font-size:12px;">${verdicts[rand]}</span></td>
-                `;
-                historyBody.prepend(row);
-                while (historyBody.children.length > 10) {
-                    historyBody.removeChild(historyBody.lastChild);
-                }
-            });
-
-            urlInput.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') analyzeBtn.click();
-            });
-
-            // ---- SETTINGS ----
-            document.getElementById('saveSettingsBtn').addEventListener('click', function() {
+        // ---- SETTINGS ----
+        const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+        if (saveSettingsBtn) {
+            saveSettingsBtn.addEventListener('click', function() {
                 const settings = {
-                    thresholdGo: document.getElementById('thresholdGo').value,
-                    thresholdPrudent: document.getElementById('thresholdPrudent').value,
-                    adSpendRatio: document.getElementById('adSpendRatio').value,
-                    shopifyFees: document.getElementById('shopifyFees').value
+                    thresholdGo: document.getElementById('thresholdGo')?.value || 30,
+                    thresholdPrudent: document.getElementById('thresholdPrudent')?.value || 15,
+                    adSpendRatio: document.getElementById('adSpendRatio')?.value || 30,
                 };
                 localStorage.setItem('margeincheckSettings', JSON.stringify(settings));
                 alert('Settings saved!');
             });
+        }
 
-            // ---- DEMO BUTTON ----
-            document.getElementById('openDemoBtn').addEventListener('click', function() {
+        // ---- DEMO BUTTON ----
+        const demoBtn = document.getElementById('openDemoBtn');
+        if (demoBtn) {
+            demoBtn.addEventListener('click', function() {
                 alert('🎬 Welcome to the demo!\n\nThis is a simulation. In the real app, you would paste an AliExpress URL and get instant results.\n\nTry it now by pasting a URL in the field above!');
             });
+        }
 
-            // ---- FAQ ----
-            document.querySelectorAll('.faq-item').forEach(item => {
-                item.addEventListener('click', function() {
-                    this.classList.toggle('open');
-                });
+        // ---- FAQ ----
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.addEventListener('click', function() {
+                this.classList.toggle('open');
             });
+        });
 
-            // ---- FOOTER PAGES ----
-            window.showFooterPage = function(page) {
-                alert('🔗 Page "' + page + '" – Under construction. Check back soon!');
-            };
+        // ---- FOOTER PAGES ----
+        window.showFooterPage = function(page) {
+            alert('🔗 Page "' + page + '" – Under construction. Check back soon!');
+        };
 
-            // ---- REPORT SOURCES ----
-            document.querySelectorAll('.report-source a').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    alert('🌐 Source: ' + this.textContent + '\nLink to the article (simulated).');
-                });
+        // ---- REPORT SOURCES ----
+        document.querySelectorAll('.report-source a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('🌐 Source: ' + this.textContent + '\nLink to the article (simulated).');
             });
+        });
 
-            // ---- REVIEW POPUP ----
-            const reviewPopup = document.getElementById('reviewPopup');
-            const closeReviewPopup = document.getElementById('closeReviewPopup');
-            const writeReviewBtn = document.getElementById('writeReviewBtn');
-            const ratingStars = document.querySelectorAll('#ratingStars i');
-            const ratingValue = document.getElementById('ratingValue');
-            const reviewForm = document.getElementById('reviewForm');
+        // ---- REVIEW POPUP ----
+        const reviewPopup = document.getElementById('reviewPopup');
+        const closeReviewPopup = document.getElementById('closeReviewPopup');
+        const writeReviewBtn = document.getElementById('writeReviewBtn');
+        const ratingStars = document.querySelectorAll('#ratingStars i');
+        const ratingValue = document.getElementById('ratingValue');
+        const reviewForm = document.getElementById('reviewForm');
 
+        if (writeReviewBtn) {
             writeReviewBtn.addEventListener('click', function() {
                 reviewPopup.classList.add('active');
                 document.body.style.overflow = 'hidden';
             });
+        }
 
-            function closeReviewPopupFn() {
-                reviewPopup.classList.remove('active');
-                document.body.style.overflow = '';
-            }
+        function closeReviewPopupFn() {
+            if (reviewPopup) reviewPopup.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        if (closeReviewPopup) {
             closeReviewPopup.addEventListener('click', closeReviewPopupFn);
+        }
+        if (reviewPopup) {
             reviewPopup.addEventListener('click', function(e) {
                 if (e.target === this) closeReviewPopupFn();
             });
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && reviewPopup.classList.contains('active')) closeReviewPopupFn();
-            });
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && reviewPopup && reviewPopup.classList.contains('active')) closeReviewPopupFn();
+        });
 
+        if (ratingStars.length && ratingValue) {
             ratingStars.forEach(star => {
                 star.addEventListener('click', function() {
                     const val = parseInt(this.dataset.value);
@@ -2299,13 +2411,14 @@
             ratingStars.forEach(s => {
                 s.classList.toggle('active', parseInt(s.dataset.value) <= initialRating);
             });
+        }
 
+        if (reviewForm) {
             reviewForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                const name = document.getElementById('reviewName').value.trim();
-                const email = document.getElementById('reviewEmail').value.trim();
-                const rating = parseInt(ratingValue.value);
-                const text = document.getElementById('reviewText').value.trim();
+                const name = document.getElementById('reviewName')?.value.trim() || '';
+                const rating = parseInt(ratingValue?.value || 5);
+                const text = document.getElementById('reviewText')?.value.trim() || '';
 
                 if (!name || !text) {
                     alert('Please fill in your name and review text.');
@@ -2316,23 +2429,26 @@
                     ' stars\nReview: "' + text + '"');
 
                 closeReviewPopupFn();
-                reviewForm.reset();
-                ratingValue.value = '5';
-                ratingStars.forEach(s => {
-                    s.classList.toggle('active', parseInt(s.dataset.value) <= 5);
-                });
+                if (reviewForm) reviewForm.reset();
+                if (ratingValue) ratingValue.value = '5';
+                if (ratingStars) {
+                    ratingStars.forEach(s => {
+                        s.classList.toggle('active', parseInt(s.dataset.value) <= 5);
+                    });
+                }
             });
+        }
 
-            // ---- BLOG "READ MORE" ----
-            document.querySelectorAll('.blog-card .read-more').forEach(link => {
-                link.addEventListener('click', function() {
-                    const title = this.closest('.blog-card').querySelector('h4').textContent;
-                    alert('📖 Opening article: "' + title + '"\n\n(Simulated – full article coming soon!)');
-                });
+        // ---- BLOG "READ MORE" ----
+        document.querySelectorAll('.blog-card .read-more').forEach(link => {
+            link.addEventListener('click', function() {
+                const title = this.closest('.blog-card').querySelector('h4')?.textContent || 'Article';
+                alert('📖 Opening article: "' + title + '"\n\n(Simulated – full article coming soon!)');
             });
+        });
 
-            console.log('MargeinCheck – Full‑width Hero with tilted phone, escaping notifications, and clean review section.');
-        })();
-    </script>
+        console.log('MargeinCheck – Scraper réel activé !');
+    })();
+</script> 
 </body>
 </html>
