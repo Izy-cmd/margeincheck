@@ -1,0 +1,2338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MargeinCheck – Profitability Analyzer for Dropshipping</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #F8FAFC;
+            color: #0F172A;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: #FFFFFF;
+            border-radius: 32px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06);
+            padding: 20px 30px 30px;
+            overflow: visible;
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0 18px;
+            border-bottom: 1px solid #E9EDF2;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 800;
+            color: #0F172A;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logo i {
+            font-size: 26px;
+            color: #00A86B;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .nav-link {
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #475569;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            font-family: 'Inter', sans-serif;
+        }
+        .nav-link.active {
+            background: #E6F7EF;
+            color: #00A86B;
+        }
+        .nav-link i {
+            margin-right: 6px;
+        }
+
+        /* ===== HERO – FULL WIDTH, PHONE TILTED, NOTIFICATIONS ESCAPING ===== */
+        .hero-section {
+            margin: 16px -30px 10px;
+            padding: 50px 20px 40px;
+            background: linear-gradient(145deg, #00A86B 0%, #008f5a 50%, #007a4a 100%);
+            border-radius: 0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 168, 107, 0.3);
+            min-height: 480px;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 50%, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
+            pointer-events: none;
+            animation: heroGlow 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes heroGlow {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+            100% {
+                transform: translate(20px, -30px) scale(1.2);
+            }
+        }
+
+        .hero-section .hero-content {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            position: relative;
+            z-index: 10;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* --- Phone container – tilted horizontal --- */
+        .phone-wrapper {
+            flex: 0 0 340px;
+            height: 460px;
+            position: relative;
+            animation: floatPhone 4s ease-in-out infinite alternate;
+            filter: drop-shadow(0 25px 60px rgba(0, 0, 0, 0.4));
+            transform: rotate(-8deg) scale(0.95); /* tilted horizontally */
+            transform-origin: center center;
+            margin: 20px 0;
+        }
+
+        @keyframes floatPhone {
+            0% {
+                transform: rotate(-8deg) scale(0.95) translateY(0px);
+            }
+            100% {
+                transform: rotate(-4deg) scale(0.95) translateY(-20px);
+            }
+        }
+
+        .phone-frame {
+            width: 100%;
+            height: 100%;
+            background: #0F172A;
+            border-radius: 50px;
+            padding: 14px;
+            box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.15), 0 30px 60px rgba(0, 0, 0, 0.5);
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .phone-frame::after {
+            content: '';
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 18px;
+            background: #1E293B;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: #1E293B;
+            border-radius: 40px;
+            overflow: hidden;
+            position: relative;
+            padding: 28px 16px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        /* --- Notifications inside phone (still visible) --- */
+        .notification {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(6px);
+            border-radius: 20px;
+            padding: 14px 18px;
+            border-left: 4px solid #00A86B;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            opacity: 0.9;
+        }
+
+        .notification .notif-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #94A3B8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .notification .notif-value {
+            font-size: 20px;
+            font-weight: 800;
+            color: #FFFFFF;
+        }
+        .notification .notif-value .highlight-green {
+            color: #00A86B;
+        }
+        .notification .notif-value .highlight-gold {
+            color: #F59E0B;
+        }
+        .notification .notif-value .highlight-red {
+            color: #EF4444;
+        }
+
+        /* --- Notifications escaping from the phone (floating out) --- */
+        .escape-notification {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(8px);
+            border-radius: 20px;
+            padding: 12px 18px;
+            border-left: 4px solid #FFD700;
+            color: #FFFFFF;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            pointer-events: none;
+            white-space: nowrap;
+            opacity: 0;
+            animation: escapeNotification 4s linear infinite;
+        }
+
+        .escape-notification:nth-child(1) {
+            top: 10%;
+            right: -150px;
+            animation-delay: 0s;
+        }
+        .escape-notification:nth-child(2) {
+            top: 35%;
+            right: -180px;
+            animation-delay: 1.2s;
+        }
+        .escape-notification:nth-child(3) {
+            top: 60%;
+            right: -200px;
+            animation-delay: 2.4s;
+        }
+        .escape-notification:nth-child(4) {
+            top: 85%;
+            right: -170px;
+            animation-delay: 3.6s;
+        }
+
+        @keyframes escapeNotification {
+            0% {
+                opacity: 0;
+                transform: translateX(0) scale(0.8);
+            }
+            20% {
+                opacity: 1;
+                transform: translateX(-20px) scale(1);
+            }
+            80% {
+                opacity: 1;
+                transform: translateX(-80px) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(-120px) scale(0.8);
+            }
+        }
+
+        .escape-notification .escape-icon {
+            margin-right: 8px;
+            color: #FFD700;
+        }
+
+        /* --- Hero text --- */
+        .hero-text {
+            flex: 1 1 340px;
+            text-align: center;
+            color: #FFFFFF;
+        }
+
+        .hero-text .badge-beta {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(4px);
+            color: #FFF;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 18px;
+            border-radius: 50px;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hero-text h1 {
+            font-size: 38px;
+            font-weight: 900;
+            line-height: 1.15;
+            color: #FFFFFF;
+            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.15);
+            margin-bottom: 6px;
+        }
+
+        .hero-text h1 .highlight {
+            color: #FFD700;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .hero-text p {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.85);
+            max-width: 500px;
+            margin: 6px auto 20px;
+        }
+
+        .hero-text .input-row {
+            display: flex;
+            gap: 12px;
+            max-width: 500px;
+            margin: 0 auto 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .hero-text .input-row input {
+            flex: 1;
+            min-width: 200px;
+            padding: 16px 24px;
+            border-radius: 60px;
+            border: none;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(6px);
+            color: #FFFFFF;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hero-text .input-row input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .hero-text .input-row input:focus {
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.15);
+        }
+
+        .hero-text .input-row button {
+            padding: 16px 36px;
+            border-radius: 60px;
+            border: none;
+            background: #FFFFFF;
+            color: #00A86B;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .hero-text .input-row button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-text .hint-text {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .hero-text .hint-text i {
+            color: #FFD700;
+        }
+
+        /* --- Stats --- */
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 18px 0 0;
+            flex-wrap: wrap;
+        }
+
+        .hero-stats .stat-item {
+            text-align: center;
+            color: #FFFFFF;
+        }
+
+        .hero-stats .stat-item .number {
+            font-size: 26px;
+            font-weight: 800;
+            color: #FFD700;
+        }
+
+        .hero-stats .stat-item .label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .btn-try {
+            padding: 12px 32px;
+            border-radius: 60px;
+            border: none;
+            background: #FFFFFF;
+            color: #00A86B;
+            font-weight: 700;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-try:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ===== REST OF PAGE ===== */
+        .why-2026-section {
+            margin: 24px 0 16px;
+            padding: 24px 20px;
+            background: #F8FAFC;
+            border-radius: 24px;
+            border: 1px solid #E9EDF2;
+        }
+
+        .why-2026-section .section-label {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .why-2026-section .section-label h2 {
+            font-size: 28px;
+            font-weight: 800;
+        }
+        .why-2026-section .section-label h2 .highlight {
+            color: #00A86B;
+        }
+        .why-2026-section .section-label p {
+            color: #475569;
+            font-size: 15px;
+        }
+
+        .why-2026-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            align-items: stretch;
+        }
+        .why-2026-image {
+            flex: 1 1 300px;
+            min-height: 220px;
+            background: linear-gradient(135deg, #E6F7EF 0%, #C8E6D9 100%);
+            border-radius: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+            text-align: center;
+            border: 1px solid #B8E6D0;
+            position: relative;
+        }
+        .why-2026-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .why-2026-image .img-caption {
+            font-size: 13px;
+            color: #0F172A;
+            font-weight: 600;
+        }
+
+        .why-2026-reports {
+            flex: 2 1 400px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .report-card {
+            background: #FFF;
+            border-radius: 16px;
+            padding: 16px 16px 12px;
+            border: 1px solid #E9EDF2;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .report-card:hover {
+            transform: translateY(-3px);
+            border-color: #00A86B;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.04);
+        }
+        .report-card .report-icon {
+            font-size: 24px;
+            color: #00A86B;
+            margin-bottom: 4px;
+        }
+        .report-card h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin: 4px 0 2px;
+        }
+        .report-card p {
+            font-size: 13px;
+            color: #64748B;
+            flex: 1;
+        }
+        .report-card .report-source {
+            font-size: 12px;
+            font-weight: 600;
+            color: #00A86B;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .report-card .report-source a {
+            color: #00A86B;
+            text-decoration: none;
+            border-bottom: 1px dotted #00A86B;
+        }
+        .report-card .report-source a:hover {
+            border-bottom: 1px solid #00A86B;
+        }
+
+        /* ===== PODIUM ===== */
+        .podium-section {
+            margin: 16px 0 20px;
+            padding: 24px 20px;
+            border-radius: 24px;
+            border: 1px solid #E9EDF2;
+            background: #F8FAFC;
+        }
+        .podium-section .section-label {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .podium-section .section-label h2 {
+            font-size: 26px;
+            font-weight: 800;
+        }
+        .podium-section .section-label h2 .highlight {
+            color: #00A86B;
+        }
+        .podium-section .section-label p {
+            color: #475569;
+            font-size: 15px;
+        }
+
+        .podium-wrapper {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 20px;
+            height: 340px;
+            padding: 0 10px;
+            flex-wrap: wrap;
+        }
+        .podium-item {
+            text-align: center;
+            padding: 20px 16px 16px;
+            border-radius: 18px;
+            background: #FFF;
+            border: 2px solid #E9EDF2;
+            width: 180px;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .podium-item:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+        }
+        .podium-item.first {
+            height: 280px;
+            border-color: #FFD700;
+            background: #FFFBF0;
+        }
+        .podium-item.second {
+            height: 240px;
+            border-color: #C0C0C0;
+            background: #F8F9FA;
+        }
+        .podium-item.third {
+            height: 200px;
+            border-color: #CD7F32;
+            background: #FDF5E6;
+        }
+        .podium-item .rank {
+            font-size: 40px;
+            display: block;
+            margin-bottom: 6px;
+        }
+        .podium-item .product-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0F172A;
+            margin-bottom: 4px;
+        }
+        .podium-item .product-tag {
+            font-size: 11px;
+            font-weight: 600;
+            color: #00A86B;
+            background: #E6F7EF;
+            padding: 2px 12px;
+            border-radius: 40px;
+            margin-bottom: 8px;
+        }
+        .podium-item .success-rate {
+            font-size: 28px;
+            font-weight: 900;
+            color: #00A86B;
+        }
+        .podium-item .success-label {
+            font-size: 13px;
+            color: #64748B;
+        }
+
+        /* ===== TOOL SECTIONS ===== */
+        .tools-container {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            margin: 24px 0;
+        }
+
+        .tool-section {
+            background: #FFFFFF;
+            border-radius: 24px;
+            border: 1px solid #E9EDF2;
+            padding: 28px 24px;
+            transition: all 0.3s ease;
+        }
+        .tool-section:hover {
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.04);
+            border-color: #00A86B40;
+        }
+
+        .tool-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .tool-header .tool-icon {
+            width: 64px;
+            height: 64px;
+            background: #E6F7EF;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: #00A86B;
+            flex-shrink: 0;
+        }
+        .tool-header h3 {
+            font-size: 22px;
+            font-weight: 800;
+            color: #0F172A;
+        }
+        .tool-header p {
+            font-size: 15px;
+            color: #64748B;
+        }
+
+        .tool-body {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            align-items: center;
+        }
+        .tool-body .tool-description {
+            flex: 1 1 240px;
+        }
+        .tool-body .tool-description p {
+            font-size: 15px;
+            color: #475569;
+            line-height: 1.6;
+        }
+        .tool-body .tool-description ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 12px;
+        }
+        .tool-body .tool-description ul li {
+            padding: 4px 0;
+            font-size: 14px;
+            color: #1E293B;
+        }
+        .tool-body .tool-description ul li i {
+            color: #00A86B;
+            margin-right: 8px;
+        }
+
+        .tool-screen {
+            flex: 2 1 400px;
+            background: #F8FAFC;
+            border-radius: 16px;
+            border: 1px solid #E9EDF2;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+            position: relative;
+        }
+        .tool-screen .screen-label {
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: #00A86B;
+            color: #FFF;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 14px;
+            border-radius: 40px;
+            text-transform: uppercase;
+        }
+        .tool-screen .mockup {
+            margin-top: 8px;
+        }
+
+        .mockup-analyzer {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .mockup-analyzer .mock-input {
+            display: flex;
+            gap: 8px;
+        }
+        .mockup-analyzer .mock-input input {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1px solid #D1D9E6;
+            border-radius: 40px;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            background: #FFF;
+        }
+        .mockup-analyzer .mock-input button {
+            padding: 10px 20px;
+            border: none;
+            background: #00A86B;
+            color: #FFF;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .mockup-analyzer .mock-result {
+            background: #FFF;
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid #E9EDF2;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+        .mockup-analyzer .mock-result .item {
+            text-align: center;
+        }
+        .mockup-analyzer .mock-result .item .value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0F172A;
+        }
+        .mockup-analyzer .mock-result .item .label {
+            font-size: 11px;
+            color: #64748B;
+        }
+        .mockup-analyzer .mock-result .item .verdict {
+            background: #00A86B;
+            color: #FFF;
+            padding: 2px 16px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 14px;
+            display: inline-block;
+        }
+
+        .mockup-history table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .mockup-history table th {
+            text-align: left;
+            padding: 8px 8px 8px 0;
+            border-bottom: 2px solid #E9EDF2;
+            color: #64748B;
+            font-weight: 600;
+        }
+        .mockup-history table td {
+            padding: 8px 8px 8px 0;
+            border-bottom: 1px solid #E9EDF2;
+        }
+        .mockup-history table .verdict-badge {
+            padding: 2px 12px;
+            border-radius: 40px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #FFF;
+        }
+        .mockup-history table .verdict-badge.go {
+            background: #00A86B;
+        }
+        .mockup-history table .verdict-badge.prudent {
+            background: #E68A00;
+        }
+        .mockup-history table .verdict-badge.pass {
+            background: #E53E3E;
+        }
+
+        .mockup-settings {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .mockup-settings .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #E9EDF2;
+        }
+        .mockup-settings .setting-row:last-child {
+            border-bottom: none;
+        }
+        .mockup-settings .setting-row .label {
+            font-size: 14px;
+            color: #1E293B;
+        }
+        .mockup-settings .setting-row .control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .mockup-settings .setting-row .control input[type="number"] {
+            width: 80px;
+            padding: 6px 10px;
+            border: 1px solid #D1D9E6;
+            border-radius: 8px;
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+        }
+        .mockup-settings .setting-row .control .slider {
+            width: 80px;
+            height: 4px;
+            background: #D1D9E6;
+            border-radius: 4px;
+            position: relative;
+        }
+        .mockup-settings .setting-row .control .slider::before {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: #00A86B;
+            border-radius: 50%;
+            top: -6px;
+            left: 60%;
+        }
+        .mockup-settings .save-btn {
+            padding: 8px 20px;
+            border: none;
+            background: #00A86B;
+            color: #FFF;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            align-self: flex-start;
+        }
+
+        /* ===== PRICING ===== */
+        .pricing-section {
+            margin: 16px 0 20px;
+            padding: 24px 20px;
+            border-radius: 24px;
+            border: 1px solid #E9EDF2;
+        }
+        .pricing-section .section-label {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .pricing-section .section-label h2 {
+            font-size: 26px;
+            font-weight: 800;
+        }
+        .pricing-section .section-label h2 .highlight {
+            color: #00A86B;
+        }
+        .pricing-section .section-label p {
+            color: #475569;
+            font-size: 15px;
+        }
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
+        .pricing-card {
+            background: #FFF;
+            border-radius: 18px;
+            padding: 22px 18px 20px;
+            border: 2px solid #E9EDF2;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .pricing-card:hover {
+            border-color: #00A86B40;
+            transform: translateY(-4px);
+        }
+        .pricing-card.popular {
+            border-color: #00A86B;
+            background: #F6FEF9;
+            position: relative;
+        }
+        .pricing-card.popular .popular-badge {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #00A86B;
+            color: #FFF;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 16px;
+            border-radius: 40px;
+            text-transform: uppercase;
+        }
+        .pricing-card .price {
+            font-size: 32px;
+            font-weight: 900;
+            color: #0F172A;
+        }
+        .pricing-card .price span {
+            font-size: 16px;
+            font-weight: 500;
+            color: #64748B;
+        }
+        .pricing-card .plan-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 4px 0 2px;
+        }
+        .pricing-card .plan-desc {
+            font-size: 13px;
+            color: #64748B;
+            margin-bottom: 10px;
+        }
+        .pricing-card ul {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+            margin: 10px 0 14px;
+        }
+        .pricing-card ul li {
+            padding: 4px 0;
+            font-size: 13px;
+            color: #1E293B;
+            border-bottom: 1px solid #F1F5F9;
+        }
+        .pricing-card ul li i {
+            color: #00A86B;
+            margin-right: 8px;
+            width: 18px;
+        }
+        .pricing-card .btn-plan {
+            padding: 10px 24px;
+            border-radius: 40px;
+            border: none;
+            background: #E6F7EF;
+            color: #00A86B;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+        .pricing-card .btn-plan:hover {
+            background: #00A86B;
+            color: #FFF;
+            transform: scale(1.03);
+        }
+        .pricing-card.popular .btn-plan {
+            background: #00A86B;
+            color: #FFF;
+        }
+        .pricing-card.popular .btn-plan:hover {
+            box-shadow: 0 10px 30px rgba(0, 168, 107, 0.3);
+        }
+
+        /* ===== WRITE YOUR REVIEW (Section nettoyée) ===== */
+        .testimonials-section {
+            margin: 16px 0 20px;
+            padding: 24px 20px;
+            border-radius: 24px;
+            border: 1px solid #E9EDF2;
+        }
+        .testimonials-section .section-label {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .testimonials-section .section-label h2 {
+            font-size: 26px;
+            font-weight: 800;
+        }
+        .testimonials-section .section-label h2 .highlight {
+            color: #00A86B;
+        }
+        .testimonials-section .section-label p {
+            color: #475569;
+            font-size: 15px;
+        }
+        .write-review-btn {
+            display: block;
+            margin: 20px auto 0;
+            padding: 12px 28px;
+            border: none;
+            background: #00A86B;
+            color: #FFF;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .write-review-btn:hover {
+            transform: scale(1.03);
+            box-shadow: 0 10px 30px rgba(0, 168, 107, 0.3);
+        }
+
+        /* ===== BLOG ===== */
+        .blog-section {
+            margin: 16px 0 20px;
+            padding: 24px 20px;
+            border-radius: 24px;
+            border: 1px solid #E9EDF2;
+            background: #FFFFFF;
+        }
+        .blog-section .section-label {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .blog-section .section-label h2 {
+            font-size: 26px;
+            font-weight: 800;
+            color: #0F172A;
+        }
+        .blog-section .section-label h2 .highlight {
+            color: #00A86B;
+        }
+        .blog-section .section-label p {
+            color: #475569;
+            font-size: 15px;
+        }
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+        .blog-card {
+            background: #00A86B;
+            border-radius: 16px;
+            padding: 18px 16px 16px;
+            border: 1px solid #00A86B;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+        .blog-card:hover {
+            transform: translateY(-3px);
+            background: #008f5a;
+            border-color: #008f5a;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        .blog-card .blog-icon {
+            font-size: 32px;
+            color: #FFFFFF;
+            display: block;
+            margin-bottom: 6px;
+        }
+        .blog-card h4 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin: 4px 0 2px;
+        }
+        .blog-card p {
+            font-size: 13px;
+            color: #FFFFFF;
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+        .blog-card .read-more {
+            font-size: 12px;
+            font-weight: 600;
+            color: #FFFFFF;
+            margin-top: 8px;
+            display: inline-block;
+            cursor: pointer;
+            border-bottom: 1px dotted rgba(255, 255, 255, 0.5);
+            transition: border-color 0.2s;
+        }
+        .blog-card .read-more:hover {
+            border-bottom-color: #FFFFFF;
+        }
+
+        /* ===== FAQ ===== */
+        .faq-section {
+            margin: 16px 0 20px;
+            padding: 24px 20px;
+            border-radius: 24px;
+            border: 1px solid #E9EDF2;
+            background: #F8FAFC;
+        }
+        .faq-section .section-label {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .faq-section .section-label h2 {
+            font-size: 26px;
+            font-weight: 800;
+        }
+        .faq-section .section-label h2 .highlight {
+            color: #00A86B;
+        }
+        .faq-section .section-label p {
+            color: #475569;
+            font-size: 15px;
+        }
+        .faq-list {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .faq-item {
+            background: #FFF;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 10px;
+            border: 1px solid #E9EDF2;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .faq-item:hover {
+            border-color: #00A86B40;
+        }
+        .faq-item .faq-q {
+            font-weight: 600;
+            font-size: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .faq-item .faq-q i {
+            color: #00A86B;
+            transition: transform 0.3s ease;
+        }
+        .faq-item.open .faq-q i {
+            transform: rotate(180deg);
+        }
+        .faq-item .faq-a {
+            display: none;
+            font-size: 14px;
+            color: #475569;
+            padding-top: 8px;
+            border-top: 1px solid #E9EDF2;
+            margin-top: 8px;
+        }
+        .faq-item.open .faq-a {
+            display: block;
+        }
+
+        /* ===== INTEGRATIONS ===== */
+        .integrations-section {
+            margin: 16px 0 20px;
+            padding: 24px 20px;
+            border-radius: 24px;
+            border: 1px solid #E9EDF2;
+        }
+        .integrations-section .section-label {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .integrations-section .section-label h2 {
+            font-size: 26px;
+            font-weight: 800;
+        }
+        .integrations-section .section-label h2 .highlight {
+            color: #00A86B;
+        }
+        .integrations-section .section-label p {
+            color: #475569;
+            font-size: 15px;
+        }
+        .integrations-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+        }
+        .integration-badge {
+            background: #FFF;
+            border: 1px solid #E9EDF2;
+            border-radius: 40px;
+            padding: 10px 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .integration-badge:hover {
+            border-color: #00A86B;
+            transform: translateY(-2px);
+        }
+        .integration-badge i {
+            font-size: 20px;
+            color: #00A86B;
+        }
+
+        /* ===== SECURITY ===== */
+        .security-section {
+            margin: 16px 0 20px;
+            padding: 20px 20px 16px;
+            border-radius: 24px;
+            border: 1px solid #E9EDF2;
+            background: #F8FAFC;
+            text-align: center;
+        }
+        .security-section .sec-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 10px;
+        }
+        .security-section .sec-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #1E293B;
+        }
+        .security-section .sec-item i {
+            color: #00A86B;
+            font-size: 20px;
+        }
+
+        /* ===== CTA FINAL ===== */
+        .cta-final {
+            margin: 16px 0 10px;
+            padding: 30px 24px;
+            background: #F8FAFC;
+            border-radius: 24px;
+            border: 1px solid #E9EDF2;
+            text-align: center;
+        }
+        .cta-final .badge-cta {
+            background: #00A86B;
+            color: #FFF;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 18px;
+            border-radius: 50px;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+        .cta-final h2 {
+            font-size: 28px;
+            font-weight: 900;
+            margin: 8px 0;
+        }
+        .cta-final h2 .highlight {
+            color: #00A86B;
+        }
+        .cta-final p {
+            color: #475569;
+            font-size: 16px;
+            max-width: 500px;
+            margin: 0 auto 16px;
+        }
+        .cta-final .btn-primary {
+            padding: 14px 40px;
+            border-radius: 60px;
+            border: none;
+            background: #00A86B;
+            color: #FFF;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .cta-final .btn-primary:hover {
+            transform: scale(1.03);
+            box-shadow: 0 12px 35px rgba(0, 168, 107, 0.3);
+        }
+        .cta-final .trust-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+            font-size: 13px;
+            color: #64748B;
+        }
+        .cta-final .trust-row i {
+            color: #00A86B;
+            margin-right: 4px;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            padding: 20px 0 10px;
+            border-top: 1px solid #E9EDF2;
+            margin-top: 16px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+        }
+        .footer-col h5 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .footer-col ul {
+            list-style: none;
+            padding: 0;
+        }
+        .footer-col ul li {
+            margin-bottom: 4px;
+        }
+        .footer-col ul li a {
+            color: #475569;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .footer-col ul li a:hover {
+            color: #00A86B;
+        }
+        .footer-bottom {
+            text-align: center;
+            padding: 12px 0 4px;
+            border-top: 1px solid #E9EDF2;
+            color: #64748B;
+            font-size: 12px;
+        }
+        .footer-bottom a {
+            color: #64748B;
+            cursor: pointer;
+        }
+        .footer-bottom a:hover {
+            color: #00A86B;
+        }
+
+        /* ===== POPUP REVIEW ===== */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(6px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .popup-overlay.active {
+            display: flex;
+        }
+        .popup {
+            background: #FFF;
+            border-radius: 28px;
+            padding: 30px 30px 24px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            animation: fadeUp 0.3s ease;
+        }
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .popup .close {
+            position: absolute;
+            top: 14px;
+            right: 20px;
+            font-size: 24px;
+            color: #94A3B8;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-family: 'Inter', sans-serif;
+        }
+        .popup .close:hover {
+            color: #0F172A;
+        }
+        .popup h2 {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+        .popup h2 i {
+            color: #00A86B;
+            margin-right: 8px;
+        }
+        .popup form {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .popup form label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #1E293B;
+        }
+        .popup form input,
+        .popup form textarea,
+        .popup form select {
+            padding: 10px 14px;
+            border: 1px solid #D1D9E6;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            background: #F8FAFC;
+            width: 100%;
+        }
+        .popup form textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .popup form .rating {
+            display: flex;
+            gap: 8px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .popup form .rating i {
+            color: #D1D9E6;
+            transition: color 0.2s;
+        }
+        .popup form .rating i.active {
+            color: #F59E0B;
+        }
+        .popup form button[type="submit"] {
+            padding: 12px 28px;
+            border: none;
+            background: #00A86B;
+            color: #FFF;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            margin-top: 4px;
+        }
+        .popup form button[type="submit"]:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 25px rgba(0, 168, 107, 0.3);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+            .hero-section {
+                margin: 16px -16px 10px;
+                padding: 30px 16px 24px;
+            }
+            .phone-wrapper {
+                flex: 0 0 240px;
+                height: 340px;
+                transform: rotate(-6deg) scale(0.85);
+            }
+            .escape-notification {
+                display: none;
+            }
+            .hero-text h1 {
+                font-size: 28px;
+            }
+            .why-2026-reports {
+                grid-template-columns: 1fr;
+            }
+            .pricing-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .blog-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .cta-final h2 {
+                font-size: 22px;
+            }
+            .podium-wrapper {
+                height: auto;
+                flex-direction: column;
+                align-items: center;
+                gap: 30px;
+            }
+            .podium-item {
+                width: 100%;
+                max-width: 280px;
+                height: auto !important;
+                padding: 20px;
+            }
+            .tool-body {
+                flex-direction: column;
+            }
+            .mockup-analyzer .mock-result {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 480px) {
+            .why-2026-reports {
+                grid-template-columns: 1fr;
+            }
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+            .blog-grid {
+                grid-template-columns: 1fr;
+            }
+            .hero-text h1 {
+                font-size: 24px;
+            }
+            .hero-text .input-row input {
+                min-width: 100%;
+            }
+            .hero-text .input-row button {
+                width: 100%;
+                justify-content: center;
+            }
+            .integrations-grid {
+                flex-direction: column;
+                align-items: center;
+            }
+            .phone-wrapper {
+                flex: 0 0 200px;
+                height: 290px;
+                transform: rotate(-4deg) scale(0.7);
+            }
+            .escape-notification {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="mainContainer">
+
+        <!-- ===== NAVBAR ===== -->
+        <nav class="navbar">
+            <div class="logo"><i class="fas fa-chart-line"></i> MargeinCheck</div>
+            <div class="nav-links">
+                <button class="nav-link active" data-page="dashboard"><i class="fas fa-home"></i> Dashboard</button>
+                <button class="nav-link" data-page="history"><i class="fas fa-clock-rotate-left"></i> History</button>
+                <button class="nav-link" data-page="settings"><i class="fas fa-sliders"></i> Settings</button>
+            </div>
+        </nav>
+
+        <!-- ================================================================
+        PAGE DASHBOARD
+        ================================================================ -->
+        <div class="page active" id="page-dashboard">
+
+            <!-- ===== HERO – FULL WIDTH, PHONE TILTED, NOTIFICATIONS ESCAPING ===== -->
+            <div class="hero-section">
+                <div class="hero-content">
+                    <div class="phone-wrapper">
+                        <div class="phone-frame">
+                            <div class="phone-screen">
+                                <div class="notification">
+                                    <span class="notif-title">Supplier Price</span>
+                                    <span class="notif-value">$12.45</span>
+                                </div>
+                                <div class="notification">
+                                    <span class="notif-title">Gross Margin</span>
+                                    <span class="notif-value"><span class="highlight-green">42%</span></span>
+                                </div>
+                                <div class="notification">
+                                    <span class="notif-title">Net Margin</span>
+                                    <span class="notif-value"><span class="highlight-green">31%</span></span>
+                                </div>
+                                <div class="notification">
+                                    <span class="notif-title">Verdict</span>
+                                    <span class="notif-value"><span class="highlight-green">GO</span> ✅</span>
+                                </div>
+                            </div>
+                            <div class="escape-notification"><span class="escape-icon"><i class="fas fa-check-circle"></i></span> GO – 42% margin</div>
+                            <div class="escape-notification"><span class="escape-icon"><i class="fas fa-check-circle"></i></span> PRUDENT – 22% margin</div>
+                            <div class="escape-notification"><span class="escape-icon"><i class="fas fa-check-circle"></i></span> PASS – 12% margin</div>
+                            <div class="escape-notification"><span class="escape-icon"><i class="fas fa-check-circle"></i></span> GO – 38% margin</div>
+                        </div>
+                    </div>
+
+                    <div class="hero-text">
+                        <span class="badge-beta"><i class="fas fa-bolt"></i> New</span>
+                        <h1>Paste an AliExpress URL<br>and get a <span class="highlight">verdict</span> in 3 seconds</h1>
+                        <p>Supplier price, hidden fees, competition – a clear <strong>GO</strong>, <strong>PRUDENT</strong> or <strong>PASS</strong>.</p>
+
+                        <div class="input-row">
+                            <input type="text" id="urlInput" placeholder="https://www.aliexpress.com/item/...">
+                            <button id="analyzeBtn"><i class="fas fa-arrow-right"></i> Analyze</button>
+                        </div>
+                        <div class="hint-text"><i class="fas fa-shield-alt"></i> 5 free analyses – no credit card required</div>
+
+                        <div class="hero-stats">
+                            <div class="stat-item"><div class="number">500+</div><div class="label">Dropshippers</div></div>
+                            <div class="stat-item"><div class="number">94%</div><div class="label">Satisfaction</div></div>
+                            <div class="stat-item"><div class="number">4.8★</div><div class="label">Avg. Rating</div></div>
+                        </div>
+
+                        <button class="btn-try" id="openDemoBtn"><i class="fas fa-play"></i> Try the demo</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== WHY DROPSHIPPING 2026 ===== -->
+            <div class="why-2026-section">
+                <div class="section-label">
+                    <h2>Why <span class="highlight">Dropshipping</span> in 2026?</h2>
+                    <p>The global e‑commerce market is booming. Here are key trends and statistics.</p>
+                </div>
+                <div class="why-2026-wrapper">
+                    <div class="why-2026-image">
+                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=400&q=80" alt="E-commerce market growth" style="width:100%;height:auto;border-radius:12px;" />
+                        <div class="img-caption"><i class="fas fa-chart-simple"></i> E‑commerce growth 2026</div>
+                    </div>
+                    <div class="why-2026-reports">
+                        <div class="report-card">
+                            <div class="report-icon"><i class="fas fa-globe"></i></div>
+                            <h4>Global market: $8.1 trillion</h4>
+                            <p>E‑commerce is projected to reach $8.1 trillion by 2026, with a 14% annual growth rate.</p>
+                            <div class="report-source"><i class="fas fa-link"></i> <a href="#" target="_blank">Statista 2025</a></div>
+                        </div>
+                        <div class="report-card">
+                            <div class="report-icon"><i class="fas fa-bag-shopping"></i></div>
+                            <h4>Dropshipping boom</h4>
+                            <p>The dropshipping market is forecast to grow 24% per year, driven by simplified tools.</p>
+                            <div class="report-source"><i class="fas fa-link"></i> <a href="#" target="_blank">Grand View Research 2025</a></div>
+                        </div>
+                        <div class="report-card">
+                            <div class="report-icon"><i class="fas fa-robot"></i></div>
+                            <h4>AI & automation</h4>
+                            <p>80% of dropshippers now use AI tools for product research and campaign management.</p>
+                            <div class="report-source"><i class="fas fa-link"></i> <a href="#" target="_blank">McKinsey 2025</a></div>
+                        </div>
+                        <div class="report-card">
+                            <div class="report-icon"><i class="fas fa-mobile-screen"></i></div>
+                            <h4>Mobile first</h4>
+                            <p>Over 70% of online purchases are made via smartphone – a huge opportunity for dropshippers.</p>
+                            <div class="report-source"><i class="fas fa-link"></i> <a href="#" target="_blank">Forbes 2025</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== TOP TRENDING PRODUCTS PODIUM ===== -->
+            <div class="podium-section">
+                <div class="section-label">
+                    <h2>🏆 Top Trending <span class="highlight">Products</span> of 2026</h2>
+                    <p>Based on thousands of successful dropshipping analyses.</p>
+                </div>
+                <div class="podium-wrapper">
+                    <div class="podium-item second">
+                        <span class="rank">🥈</span>
+                        <div class="product-name">Mini Portable Projector</div>
+                        <span class="product-tag">High Demand</span>
+                        <div class="success-rate">85%</div>
+                        <div class="success-label">Success Rate</div>
+                    </div>
+                    <div class="podium-item first">
+                        <span class="rank">🥇</span>
+                        <div class="product-name">Smart Fitness Watch Pro</div>
+                        <span class="product-tag">Best Seller</span>
+                        <div class="success-rate">92%</div>
+                        <div class="success-label">Success Rate</div>
+                    </div>
+                    <div class="podium-item third">
+                        <span class="rank">🥉</span>
+                        <div class="product-name">Collapsible Eco-Cup</div>
+                        <span class="product-tag">Trending</span>
+                        <div class="success-rate">76%</div>
+                        <div class="success-label">Success Rate</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== TOOL SECTIONS ===== -->
+            <div class="tools-container">
+                <div class="tool-section">
+                    <div class="tool-header">
+                        <div class="tool-icon"><i class="fas fa-chart-line"></i></div>
+                        <div>
+                            <h3>Profitability Analyzer</h3>
+                            <p>Paste any product URL and get an instant financial breakdown.</p>
+                        </div>
+                    </div>
+                    <div class="tool-body">
+                        <div class="tool-description">
+                            <p>Our core tool calculates supplier price, shipping, platform fees, ad spend, and margins in real-time.</p>
+                            <ul>
+                                <li><i class="fas fa-check-circle"></i> Gross &amp; Net Margin</li>
+                                <li><i class="fas fa-check-circle"></i> Breakeven Point</li>
+                                <li><i class="fas fa-check-circle"></i> GO / PRUDENT / PASS verdict</li>
+                            </ul>
+                        </div>
+                        <div class="tool-screen">
+                            <span class="screen-label">Live Demo</span>
+                            <div class="mockup mockup-analyzer">
+                                <div class="mock-input">
+                                    <input type="text" value="https://www.aliexpress.com/item/100500..." readonly />
+                                    <button>Analyze</button>
+                                </div>
+                                <div class="mock-result">
+                                    <div class="item">
+                                        <div class="value">$12.45</div>
+                                        <div class="label">Supplier Price</div>
+                                    </div>
+                                    <div class="item">
+                                        <div class="value">42%</div>
+                                        <div class="label">Gross Margin</div>
+                                    </div>
+                                    <div class="item">
+                                        <div class="verdict">GO</div>
+                                        <div class="label">Verdict</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tool-section">
+                    <div class="tool-header">
+                        <div class="tool-icon"><i class="fas fa-clock-rotate-left"></i></div>
+                        <div>
+                            <h3>Smart History</h3>
+                            <p>Every analysis is automatically saved. Track and compare your decisions.</p>
+                        </div>
+                    </div>
+                    <div class="tool-body">
+                        <div class="tool-description">
+                            <p>Stop losing track of your product research. All your past analyses are stored and searchable.</p>
+                            <ul>
+                                <li><i class="fas fa-check-circle"></i> 12‑month history (Pro plan)</li>
+                                <li><i class="fas fa-check-circle"></i> Compare margins side‑by‑side</li>
+                                <li><i class="fas fa-check-circle"></i> Export to CSV or PDF</li>
+                            </ul>
+                        </div>
+                        <div class="tool-screen">
+                            <span class="screen-label">Live Demo</span>
+                            <div class="mockup mockup-history">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Price</th>
+                                            <th>Margin</th>
+                                            <th>Verdict</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Smart Watch Pro</td>
+                                            <td>$18.50</td>
+                                            <td>38%</td>
+                                            <td><span class="verdict-badge go">GO</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Wireless Earbuds</td>
+                                            <td>$9.90</td>
+                                            <td>22%</td>
+                                            <td><span class="verdict-badge prudent">PRUDENT</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>LED Desk Lamp</td>
+                                            <td>$14.30</td>
+                                            <td>12%</td>
+                                            <td><span class="verdict-badge pass">PASS</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tool-section">
+                    <div class="tool-header">
+                        <div class="tool-icon"><i class="fas fa-sliders"></i></div>
+                        <div>
+                            <h3>Custom Settings</h3>
+                            <p>Fine‑tune your profitability thresholds to match your business strategy.</p>
+                        </div>
+                    </div>
+                    <div class="tool-body">
+                        <div class="tool-description">
+                            <p>Adjust margin limits, ad spend ratios, and Shopify fees to get a verdict that fits your goals.</p>
+                            <ul>
+                                <li><i class="fas fa-check-circle"></i> GO / PRUDENT thresholds</li>
+                                <li><i class="fas fa-check-circle"></i> Ad spend ratio control</li>
+                                <li><i class="fas fa-check-circle"></i> Platform fee adjustments</li>
+                            </ul>
+                        </div>
+                        <div class="tool-screen">
+                            <span class="screen-label">Live Demo</span>
+                            <div class="mockup mockup-settings">
+                                <div class="setting-row">
+                                    <span class="label">GO threshold (net margin)</span>
+                                    <div class="control">
+                                        <span class="slider"></span>
+                                        <input type="number" value="30" />
+                                    </div>
+                                </div>
+                                <div class="setting-row">
+                                    <span class="label">PRUDENT threshold</span>
+                                    <div class="control">
+                                        <span class="slider" style="--slider-pos: 40%;"></span>
+                                        <input type="number" value="15" />
+                                    </div>
+                                </div>
+                                <div class="setting-row">
+                                    <span class="label">Ad spend ratio</span>
+                                    <div class="control">
+                                        <span class="slider" style="--slider-pos: 70%;"></span>
+                                        <input type="number" value="30" />
+                                    </div>
+                                </div>
+                                <button class="save-btn">Save Settings</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== PRICING ===== -->
+            <div class="pricing-section">
+                <div class="section-label">
+                    <h2>Choose your <span class="highlight">Plan</span></h2>
+                    <p>Solutions for every dropshipper, from beginner to pro.</p>
+                </div>
+                <div class="pricing-grid">
+                    <div class="pricing-card">
+                        <div class="plan-name">Discovery</div>
+                        <div class="price">$0 <span>/ month</span></div>
+                        <div class="plan-desc">Perfect for testing</div>
+                        <ul>
+                            <li><i class="fas fa-check-circle"></i> 5 free analyses</li>
+                            <li><i class="fas fa-check-circle"></i> GO/PRUDENT/PASS verdict</li>
+                            <li><i class="fas fa-check-circle"></i> 3-day history</li>
+                            <li><i class="fas fa-times-circle" style="color:#94A3B8;"></i> No export</li>
+                        </ul>
+                        <button class="btn-plan">Start Free</button>
+                    </div>
+                    <div class="pricing-card popular">
+                        <div class="popular-badge">Most Popular</div>
+                        <div class="plan-name">Pro</div>
+                        <div class="price">$19 <span>/ month</span></div>
+                        <div class="plan-desc">For serious dropshippers</div>
+                        <ul>
+                            <li><i class="fas fa-check-circle"></i> Unlimited analyses</li>
+                            <li><i class="fas fa-check-circle"></i> 12-month history</li>
+                            <li><i class="fas fa-check-circle"></i> CSV / PDF export</li>
+                            <li><i class="fas fa-check-circle"></i> Customizable thresholds</li>
+                            <li><i class="fas fa-check-circle"></i> Priority support</li>
+                        </ul>
+                        <button class="btn-plan">Choose Pro</button>
+                    </div>
+                    <div class="pricing-card">
+                        <div class="plan-name">Agency</div>
+                        <div class="price">$59 <span>/ month</span></div>
+                        <div class="plan-desc">For agencies and teams</div>
+                        <ul>
+                            <li><i class="fas fa-check-circle"></i> Everything in Pro</li>
+                            <li><i class="fas fa-check-circle"></i> 5 user accounts</li>
+                            <li><i class="fas fa-check-circle"></i> Full API access</li>
+                            <li><i class="fas fa-check-circle"></i> Client management</li>
+                            <li><i class="fas fa-check-circle"></i> Profitability audits</li>
+                        </ul>
+                        <button class="btn-plan">Contact Team</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== WRITE YOUR REVIEW (Section nettoyée) ===== -->
+            <div class="testimonials-section">
+                <div class="section-label">
+                    <h2>Share Your <span class="highlight">Experience</span></h2>
+                    <p>Your feedback helps us improve and helps other dropshippers make better decisions. Write your review below!</p>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="write-review-btn" id="writeReviewBtn"><i class="fas fa-pen"></i> Write your review</button>
+                </div>
+            </div>
+
+            <!-- ===== BLOG ===== -->
+            <div class="blog-section">
+                <div class="section-label">
+                    <h2>Latest from our <span class="highlight">Blog</span></h2>
+                    <p>Expert tips, market trends, and success stories for dropshippers.</p>
+                </div>
+                <div class="blog-grid">
+                    <div class="blog-card">
+                        <span class="blog-icon"><i class="fas fa-rocket"></i></span>
+                        <h4>5 Dropshipping Strategies That Work in 2026</h4>
+                        <p>Discover the most effective tactics to scale your store this year – from AI‑powered product research to smart ad budgeting.</p>
+                        <span class="read-more">Read more →</span>
+                    </div>
+                    <div class="blog-card">
+                        <span class="blog-icon"><i class="fas fa-chart-simple"></i></span>
+                        <h4>How to Read Profitability Metrics Like a Pro</h4>
+                        <p>Understand gross margin, net margin, and breakeven – and use them to make better product decisions.</p>
+                        <span class="read-more">Read more →</span>
+                    </div>
+                    <div class="blog-card">
+                        <span class="blog-icon"><i class="fas fa-robot"></i></span>
+                        <h4>AI Automation for Dropshipping: A Beginner’s Guide</h4>
+                        <p>Learn how to leverage AI tools to automate product research, ad creation, and customer service – saving hours every week.</p>
+                        <span class="read-more">Read more →</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== FAQ ===== -->
+            <div class="faq-section">
+                <div class="section-label">
+                    <h2>Frequently Asked <span class="highlight">Questions</span></h2>
+                    <p>Answers to the most common questions.</p>
+                </div>
+                <div class="faq-list">
+                    <div class="faq-item open">
+                        <div class="faq-q">How does MargeinCheck calculate profitability? <i class="fas fa-chevron-down"></i></div>
+                        <div class="faq-a">We combine supplier price, platform fees (Shopify, AliExpress), shipping costs, a customizable ad spend ratio, and your margin thresholds to calculate gross margin, net margin, and breakeven. The verdict (GO/PRUDENT/PASS) is then determined based on your thresholds.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q">What differentiates the plans? <i class="fas fa-chevron-down"></i></div>
+                        <div class="faq-a">The Discovery plan offers 5 free analyses with a 3-day history limit. The Pro plan unlocks unlimited analyses, a 12-month history, CSV/PDF export, and customizable thresholds. The Agency plan adds user accounts, full API access, and agency-specific features.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q">Is my data secure? <i class="fas fa-chevron-down"></i></div>
+                        <div class="faq-a">Yes, all data is encrypted in transit and at rest. We do not store any payment information. MargeinCheck is GDPR compliant and we do not share your data with any third parties.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q">Can I cancel my subscription anytime? <i class="fas fa-chevron-down"></i></div>
+                        <div class="faq-a">Absolutely. You can cancel your subscription from your dashboard at any time. No commitments, no cancellation fees.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q">How can I export my analyses? <i class="fas fa-chevron-down"></i></div>
+                        <div class="faq-a">On the Pro and Agency plans, an export button is available in the history section. You can export as CSV (for Excel) or PDF (for your reports).</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== INTEGRATIONS ===== -->
+            <div class="integrations-section">
+                <div class="section-label">
+                    <h2><span class="highlight">Partner</span> Integrations</h2>
+                    <p>MargeinCheck integrates with the platforms you already use.</p>
+                </div>
+                <div class="integrations-grid">
+                    <div class="integration-badge"><i class="fab fa-shopify"></i> Shopify</div>
+                    <div class="integration-badge"><i class="fab fa-woocommerce"></i> WooCommerce</div>
+                    <div class="integration-badge"><i class="fab fa-amazon"></i> Amazon</div>
+                    <div class="integration-badge"><i class="fas fa-shopping-cart"></i> TikTok Shop</div>
+                    <div class="integration-badge"><i class="fas fa-archive"></i> AliExpress</div>
+                    <div class="integration-badge"><i class="fas fa-envelope"></i> Email Export</div>
+                    <div class="integration-badge"><i class="fas fa-cloud"></i> Google Drive</div>
+                </div>
+            </div>
+
+            <!-- ===== SECURITY ===== -->
+            <div class="security-section">
+                <h3 style="font-weight:700;font-size:20px;display:flex;align-items:center;justify-content:center;gap:8px;"><i class="fas fa-lock" style="color:#00A86B;"></i> Security & Trust</h3>
+                <div class="sec-grid">
+                    <div class="sec-item"><i class="fas fa-check-circle"></i> 256-bit SSL Encryption</div>
+                    <div class="sec-item"><i class="fas fa-check-circle"></i> GDPR Compliant</div>
+                    <div class="sec-item"><i class="fas fa-check-circle"></i> No Credit Card Stored</div>
+                    <div class="sec-item"><i class="fas fa-check-circle"></i> Daily Backups</div>
+                    <div class="sec-item"><i class="fas fa-check-circle"></i> 2FA Authentication</div>
+                </div>
+            </div>
+
+            <!-- ===== CTA FINAL ===== -->
+            <div class="cta-final">
+                <span class="badge-cta"><i class="fas fa-rocket"></i> Limited offer</span>
+                <h2>Ready to <span class="highlight">win</span> with dropshipping?</h2>
+                <p>Join 500+ dropshippers who use MargeinCheck. No credit card required.</p>
+                <button class="btn-primary" onclick="document.getElementById('urlInput').focus(); window.scrollTo({top:0,behavior:'smooth'});">
+                    <i class="fas fa-arrow-right"></i> Get started for free
+                </button>
+                <div class="trust-row">
+                    <span><i class="fas fa-check-circle"></i> 5 free analyses</span>
+                    <span><i class="fas fa-check-circle"></i> No credit card</span>
+                    <span><i class="fas fa-check-circle"></i> 500+ users</span>
+                </div>
+            </div>
+
+            <!-- ===== FOOTER ===== -->
+            <div class="footer" id="mainFooter">
+                <div class="footer-col">
+                    <h5>MargeinCheck</h5>
+                    <ul>
+                        <li><a href="#" onclick="switchTab('dashboard')">Dashboard</a></li>
+                        <li><a href="#" onclick="switchTab('history')">History</a></li>
+                        <li><a href="#" onclick="switchTab('settings')">Settings</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h5>Resources</h5>
+                    <ul>
+                        <li><a href="#" onclick="showFooterPage('guides')">Guides</a></li>
+                        <li><a href="#" onclick="showFooterPage('faq')">FAQ</a></li>
+                        <li><a href="#" onclick="showFooterPage('blog')">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h5>Legal</h5>
+                    <ul>
+                        <li><a href="#" onclick="showFooterPage('terms')">Terms</a></li>
+                        <li><a href="#" onclick="showFooterPage('privacy')">Privacy</a></li>
+                        <li><a href="#" onclick="showFooterPage('cookies')">Cookies</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h5>Connect</h5>
+                    <ul>
+                        <li><a href="#" onclick="showFooterPage('twitter')">Twitter</a></li>
+                        <li><a href="#" onclick="showFooterPage('youtube')">YouTube</a></li>
+                        <li><a href="#" onclick="showFooterPage('discord')">Discord</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 MargeinCheck · <a href="#" onclick="switchTab('dashboard')">Back to top ↑</a></p>
+            </div>
+        </div>
+
+        <!-- ================================================================
+        PAGE HISTORY
+        ================================================================ -->
+        <div class="page" id="page-history" style="display:none; padding:20px 0;">
+            <h2 style="font-size:22px;font-weight:800;"><i class="fas fa-clock-rotate-left" style="color:#00A86B;"></i> History</h2>
+            <p style="color:#64748B;">Your last 10 analyses.</p>
+            <table style="width:100%;border-collapse:collapse;margin-top:12px;background:#F8FAFC;border-radius:16px;overflow:hidden;">
+                <thead><tr style="background:#E9EDF2;"><th style="padding:10px 16px;text-align:left;font-size:12px;">Product</th><th style="padding:10px 16px;text-align:left;font-size:12px;">Price</th><th style="padding:10px 16px;text-align:left;font-size:12px;">Margin</th><th style="padding:10px 16px;text-align:left;font-size:12px;">Verdict</th></tr></thead>
+                <tbody id="historyBody"><tr><td colspan="4" style="padding:20px;text-align:center;color:#94A3B8;">No analyses yet.</td></tr></tbody>
+            </table>
+        </div>
+
+        <!-- ================================================================
+        PAGE SETTINGS
+        ================================================================ -->
+        <div class="page" id="page-settings" style="display:none; padding:20px 0;">
+            <h2 style="font-size:22px;font-weight:800;"><i class="fas fa-sliders" style="color:#00A86B;"></i> Settings</h2>
+            <p style="color:#64748B;">Customize your analysis thresholds.</p>
+            <div style="background:#F8FAFC;border-radius:16px;padding:20px;margin-top:12px;border:1px solid #E9EDF2;">
+                <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #E9EDF2;flex-wrap:wrap;gap:8px;">
+                    <span>GO threshold (min net margin)</span>
+                    <input type="number" id="thresholdGo" value="30" style="background:#FFF;border:1px solid #D1D9E6;border-radius:8px;padding:6px 14px;width:140px;">
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #E9EDF2;flex-wrap:wrap;gap:8px;">
+                    <span>PRUDENT threshold (min net margin)</span>
+                    <input type="number" id="thresholdPrudent" value="15" style="background:#FFF;border:1px solid #D1D9E6;border-radius:8px;padding:6px 14px;width:140px;">
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #E9EDF2;flex-wrap:wrap;gap:8px;">
+                    <span>Ad spend ratio (% of selling price)</span>
+                    <input type="number" id="adSpendRatio" value="30" style="background:#FFF;border:1px solid #D1D9E6;border-radius:8px;padding:6px 14px;width:140px;">
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:8px 0;flex-wrap:wrap;gap:8px;">
+                    <span>Shopify fees (% + fixed)</span>
+                    <input type="text" id="shopifyFees" value="2.9% + $0.30" style="background:#FFF;border:1px solid #D1D9E6;border-radius:8px;padding:6px 14px;width:160px;">
+                </div>
+                <button id="saveSettingsBtn" style="margin-top:12px;padding:10px 28px;border-radius:40px;border:none;background:#00A86B;color:#FFF;font-weight:700;cursor:pointer;">Save Settings</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ===== POPUP REVIEW ===== -->
+    <div class="popup-overlay" id="reviewPopup">
+        <div class="popup">
+            <button class="close" id="closeReviewPopup"><i class="fas fa-times"></i></button>
+            <h2><i class="fas fa-pen"></i> Write your review</h2>
+            <form id="reviewForm">
+                <label for="reviewName">Your name</label>
+                <input type="text" id="reviewName" placeholder="e.g. John Doe" required />
+
+                <label for="reviewEmail">Your email (optional)</label>
+                <input type="email" id="reviewEmail" placeholder="you@example.com" />
+
+                <label for="reviewRating">Your rating</label>
+                <div class="rating" id="ratingStars">
+                    <i class="fas fa-star" data-value="1"></i>
+                    <i class="fas fa-star" data-value="2"></i>
+                    <i class="fas fa-star" data-value="3"></i>
+                    <i class="fas fa-star" data-value="4"></i>
+                    <i class="fas fa-star" data-value="5"></i>
+                </div>
+                <input type="hidden" id="ratingValue" value="5" />
+
+                <label for="reviewText">Your experience</label>
+                <textarea id="reviewText" placeholder="Tell us about your experience with MargeinCheck..." required></textarea>
+
+                <button type="submit">Submit review</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================================================================
+    JAVASCRIPT
+    ================================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ---- TAB SWITCHING ----
+            const pages = {
+                dashboard: document.getElementById('page-dashboard'),
+                history: document.getElementById('page-history'),
+                settings: document.getElementById('page-settings')
+            };
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            function switchTab(tab) {
+                Object.keys(pages).forEach(key => {
+                    pages[key].style.display = (key === tab) ? 'block' : 'none';
+                });
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.dataset.page === tab);
+                });
+                document.getElementById('mainFooter').style.display = (tab === 'dashboard') ? 'grid' : 'none';
+            }
+            window.switchTab = switchTab;
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    switchTab(this.dataset.page);
+                });
+            });
+
+            // ---- SIMULATED ANALYSIS ----
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            const urlInput = document.getElementById('urlInput');
+
+            analyzeBtn.addEventListener('click', function() {
+                const url = urlInput.value.trim();
+                if (!url) { alert('Please paste an AliExpress URL.'); return; }
+                if (!url.startsWith('http://') && !url.startsWith('https://')) { alert('Invalid URL.'); return; }
+
+                const verdicts = ['GO', 'PRUDENT', 'PASS'];
+                const colors = ['#00A86B', '#E68A00', '#E53E3E'];
+                const rand = Math.floor(Math.random() * 3);
+                const margin = (Math.random() * 40 + 10).toFixed(0);
+                const price = (Math.random() * 30 + 5).toFixed(2);
+
+                alert('✅ Analysis complete!\nProduct: ' + url.substring(0, 40) + '...\nSupplier price: $' + price +
+                    '\nNet margin: ' + margin + '%\nVerdict: ' + verdicts[rand]);
+
+                // Add to history
+                const historyBody = document.getElementById('historyBody');
+                if (historyBody.querySelector('td[colspan]')) {
+                    historyBody.innerHTML = '';
+                }
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td style="padding:10px 16px;border-bottom:1px solid #E9EDF2;">${url.substring(0,30)}...</td>
+                    <td style="padding:10px 16px;border-bottom:1px solid #E9EDF2;">$${price}</td>
+                    <td style="padding:10px 16px;border-bottom:1px solid #E9EDF2;">${margin}%</td>
+                    <td style="padding:10px 16px;border-bottom:1px solid #E9EDF2;"><span style="background:${colors[rand]};color:#FFF;padding:2px 12px;border-radius:30px;font-size:12px;">${verdicts[rand]}</span></td>
+                `;
+                historyBody.prepend(row);
+                while (historyBody.children.length > 10) {
+                    historyBody.removeChild(historyBody.lastChild);
+                }
+            });
+
+            urlInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') analyzeBtn.click();
+            });
+
+            // ---- SETTINGS ----
+            document.getElementById('saveSettingsBtn').addEventListener('click', function() {
+                const settings = {
+                    thresholdGo: document.getElementById('thresholdGo').value,
+                    thresholdPrudent: document.getElementById('thresholdPrudent').value,
+                    adSpendRatio: document.getElementById('adSpendRatio').value,
+                    shopifyFees: document.getElementById('shopifyFees').value
+                };
+                localStorage.setItem('margeincheckSettings', JSON.stringify(settings));
+                alert('Settings saved!');
+            });
+
+            // ---- DEMO BUTTON ----
+            document.getElementById('openDemoBtn').addEventListener('click', function() {
+                alert('🎬 Welcome to the demo!\n\nThis is a simulation. In the real app, you would paste an AliExpress URL and get instant results.\n\nTry it now by pasting a URL in the field above!');
+            });
+
+            // ---- FAQ ----
+            document.querySelectorAll('.faq-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    this.classList.toggle('open');
+                });
+            });
+
+            // ---- FOOTER PAGES ----
+            window.showFooterPage = function(page) {
+                alert('🔗 Page "' + page + '" – Under construction. Check back soon!');
+            };
+
+            // ---- REPORT SOURCES ----
+            document.querySelectorAll('.report-source a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    alert('🌐 Source: ' + this.textContent + '\nLink to the article (simulated).');
+                });
+            });
+
+            // ---- REVIEW POPUP ----
+            const reviewPopup = document.getElementById('reviewPopup');
+            const closeReviewPopup = document.getElementById('closeReviewPopup');
+            const writeReviewBtn = document.getElementById('writeReviewBtn');
+            const ratingStars = document.querySelectorAll('#ratingStars i');
+            const ratingValue = document.getElementById('ratingValue');
+            const reviewForm = document.getElementById('reviewForm');
+
+            writeReviewBtn.addEventListener('click', function() {
+                reviewPopup.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+
+            function closeReviewPopupFn() {
+                reviewPopup.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            closeReviewPopup.addEventListener('click', closeReviewPopupFn);
+            reviewPopup.addEventListener('click', function(e) {
+                if (e.target === this) closeReviewPopupFn();
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && reviewPopup.classList.contains('active')) closeReviewPopupFn();
+            });
+
+            ratingStars.forEach(star => {
+                star.addEventListener('click', function() {
+                    const val = parseInt(this.dataset.value);
+                    ratingValue.value = val;
+                    ratingStars.forEach(s => {
+                        s.classList.toggle('active', parseInt(s.dataset.value) <= val);
+                    });
+                });
+                star.addEventListener('mouseenter', function() {
+                    const val = parseInt(this.dataset.value);
+                    ratingStars.forEach(s => {
+                        s.style.color = (parseInt(s.dataset.value) <= val) ? '#F59E0B' : '#D1D9E6';
+                    });
+                });
+                star.addEventListener('mouseleave', function() {
+                    const current = parseInt(ratingValue.value);
+                    ratingStars.forEach(s => {
+                        s.style.color = (parseInt(s.dataset.value) <= current) ? '#F59E0B' : '#D1D9E6';
+                    });
+                });
+            });
+            const initialRating = parseInt(ratingValue.value);
+            ratingStars.forEach(s => {
+                s.classList.toggle('active', parseInt(s.dataset.value) <= initialRating);
+            });
+
+            reviewForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('reviewName').value.trim();
+                const email = document.getElementById('reviewEmail').value.trim();
+                const rating = parseInt(ratingValue.value);
+                const text = document.getElementById('reviewText').value.trim();
+
+                if (!name || !text) {
+                    alert('Please fill in your name and review text.');
+                    return;
+                }
+
+                alert('✅ Thank you ' + name + '! Your review has been submitted for approval.\n\nRating: ' + rating +
+                    ' stars\nReview: "' + text + '"');
+
+                closeReviewPopupFn();
+                reviewForm.reset();
+                ratingValue.value = '5';
+                ratingStars.forEach(s => {
+                    s.classList.toggle('active', parseInt(s.dataset.value) <= 5);
+                });
+            });
+
+            // ---- BLOG "READ MORE" ----
+            document.querySelectorAll('.blog-card .read-more').forEach(link => {
+                link.addEventListener('click', function() {
+                    const title = this.closest('.blog-card').querySelector('h4').textContent;
+                    alert('📖 Opening article: "' + title + '"\n\n(Simulated – full article coming soon!)');
+                });
+            });
+
+            console.log('MargeinCheck – Full‑width Hero with tilted phone, escaping notifications, and clean review section.');
+        })();
+    </script>
+</body>
+</html>

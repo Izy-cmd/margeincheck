@@ -1,0 +1,12 @@
+{
+  "name": "margeincheck",
+  "version": "1.0.0",
+  "description": "AliExpress profitability analyzer",
+  "main": "api/scrape.js",
+  "scripts": {
+    "start": "node api/scrape.js"
+  },
+  "dependencies": {
+    "puppeteer": "^21.0.0"
+  }
+}
