@@ -1,5 +1,4 @@
-// api/scrape.js
-const puppeteer = require('puppeteer');
+const axios = require('axios');
 
 module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -8,88 +7,71 @@ module.exports = async (req, res) => {
     const { url } = req.query;
 
     if (!url || !url.includes('aliexpress.com')) {
-        return res.status(400).json({ 
-            success: false, 
-            error: 'Veuillez fournir une URL AliExpress valide.' 
+        return res.status(400).json({
+            success: false,
+            error: 'Veuillez fournir une URL AliExpress valide.'
         });
     }
 
     try {
-        console.log('Scraping:', url);
-        const browser = await puppeteer.launch({ 
-            headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
+        const API_KEY = '0J3CUZABWCBP7VH13X15B8U021WCQMLLDP67NZJ0';
+
+        const response = await axios.get('https://app.scrapingbee.com/api/v1/', {
+            params: {
+                api_key: API_KEY,
+                url: url,
+                render_js: 'false',
+                wait: 2000
+            }
         });
-        const page = await browser.newPage();
-        await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-        await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
+
+        const html = response.data;
 
         let price = null;
         let title = 'Produit inconnu';
 
-        try {
-            price = await page.$eval('.product-price-value', el => el.innerText.trim());
-        } catch (e) {
-            try {
-                price = await page.$eval('.price', el => el.innerText.trim());
-            } catch (e2) {
-                try {
-                    price = await page.evaluate(() => {
-                        const elements = document.querySelectorAll('*');
-                        for (let el of elements) {
-                            const text = el.innerText;
-                            if (text && text.match(/\$\d+\.\d{2}/)) {
-                                return text.match(/\$\d+\.\d{2}/)[0];
-                            }
-                        }
-                        return null;
-                    });
-                } catch (e3) {
-                    price = 'Prix non trouvé';
-                }
-            }
-        }
-
-        try {
-            title = await page.$eval('.product-title-text', el => el.innerText.trim());
-        } catch (e) {
-            try {
-                title = await page.$eval('h1', el => el.innerText.trim());
-            } catch (e2) {
-                title = 'Produit AliExpress';
-            }
-        }
-
-        await browser.close();
-
-        let cleanedPrice = price;
-        if (cleanedPrice) {
-            const match = cleanedPrice.match(/(\d+\.\d{2})/);
-            if (match) {
-                cleanedPrice = match[1];
+        const priceMatch = html.match(/\$(\d+\.\d{2})/);
+        if (priceMatch) {
+            price = priceMatch[1];
+        } else {
+            const euroMatch = html.match(/€(\d+\.\d{2})/);
+            if (euroMatch) {
+                price = euroMatch[1];
             } else {
-                const matchSimple = cleanedPrice.match(/(\d+)/);
-                if (matchSimple) {
-                    cleanedPrice = matchSimple[1] + '.00';
+                const anyPrice = html.match(/(\d+\.\d{2})\s*(?:USD|EUR|\$|€)/);
+                if (anyPrice) {
+                    price = anyPrice[1];
                 }
             }
+        }
+
+        const titleMatch = html.match(/<h1[^>]*>(.*?)<\/h1>/i);
+        if (titleMatch) {
+            title = titleMatch[1].replace(/<[^>]+>/g, '').trim().substring(0, 80);
+        }
+
+        if (!price) {
+            return res.status(404).json({
+                success: false,
+                error: 'Impossible de trouver le prix sur cette page.'
+            });
         }
 
         res.json({
             success: true,
             product: {
-                title: title,
-                price: cleanedPrice || '0.00',
-                priceRaw: price || 'Prix non trouvé',
+                title: title || 'Produit AliExpress',
+                price: price,
+                priceRaw: '$' + price,
                 url: url
             }
         });
 
     } catch (error) {
-        console.error('Erreur de scraping:', error);
+        console.error('Erreur ScrapingBee:', error.message);
         res.status(500).json({
             success: false,
-            error: 'Erreur lors de l\'analyse du produit: ' + error.message
+            error: 'Erreur de scraping: ' + error.message
         });
     }
 };
