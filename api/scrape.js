@@ -12,7 +12,7 @@ module.exports = async (req, res) => {
 
     try {
         // Ta clé ScrapingBee (celle que tu as sur ton tableau de bord)
-        const API_KEY = '0J3CUZABWCBP7VH13X15B8U021WCQMLLDP67NZJ0';
+        const API_KEY = OJCUZA8WCB9TVH13XI5B8U021WCQMLLDP67NZJOT3W7XTVSSBFRXXPGSIDTVU3UPP50M78P8VF2R27C7;
 
         const response = await axios.get('https://app.scrapingbee.com/api/v1/', {
             params: {
