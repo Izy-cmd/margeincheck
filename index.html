@@ -2147,7 +2147,7 @@
     (function() {
         'use strict';
 
-        console.log('🚀 MargeinCheck – Script chargé');
+        console.log('🚀 MargeinCheck – Script chargé (scraping direct)');
 
         // ===== DOM REFS =====
         const pages = {
@@ -2211,7 +2211,7 @@
             while (historyBody.children.length > 10) { historyBody.removeChild(historyBody.lastChild); }
         }
 
-        // ===== ANALYSE AVEC LA VRAIE API =====
+        // ===== ANALYSE AVEC SCRAPING DIRECT (via proxy CORS) =====
         let analysisCount = 0;
 
         analyzeBtn.addEventListener('click', function() {
@@ -2222,28 +2222,60 @@
 
             analyzeBtn.disabled = true;
             analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
-            console.log('2. Bouton désactivé, appel API...');
+            console.log('2. Bouton désactivé, scraping direct...');
 
-            fetch(`/api/scrape?url=${encodeURIComponent(url)}`)
+            // Utiliser un proxy CORS pour récupérer le HTML de la page
+            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+
+            fetch(proxyUrl)
                 .then(response => {
-                    console.log('3. Réponse reçue, status :', response.status);
+                    console.log('3. Réponse proxy reçue, status :', response.status);
                     if (!response.ok) {
-                        throw new Error('Erreur serveur: ' + response.status);
+                        throw new Error('Erreur proxy: ' + response.status);
                     }
                     return response.json();
                 })
                 .then(data => {
-                    console.log('4. Données reçues :', data);
-                    if (!data.success) {
-                        alert('Erreur: ' + (data.error || 'Impossible de récupérer le produit.'));
+                    console.log('4. Données HTML reçues');
+                    const html = data.contents;
+
+                    // === Extraction du prix ===
+                    let price = null;
+                    let title = 'Produit inconnu';
+
+                    // Méthode 1: Chercher le prix dans les balises
+                    const priceMatch = html.match(/\$(\d+\.\d{2})/);
+                    if (priceMatch) {
+                        price = priceMatch[1];
+                    } else {
+                        const euroMatch = html.match(/€(\d+\.\d{2})/);
+                        if (euroMatch) {
+                            price = euroMatch[1];
+                        } else {
+                            const anyPrice = html.match(/(\d+\.\d{2})\s*(?:USD|EUR|\$|€)/);
+                            if (anyPrice) {
+                                price = anyPrice[1];
+                            }
+                        }
+                    }
+
+                    // === Extraction du titre ===
+                    const titleMatch = html.match(/<h1[^>]*>(.*?)<\/h1>/i);
+                    if (titleMatch) {
+                        title = titleMatch[1].replace(/<[^>]+>/g, '').trim().substring(0, 80);
+                    }
+
+                    console.log('5. Prix extrait :', price, 'Nom :', title);
+
+                    if (!price) {
+                        alert('Impossible de trouver le prix sur cette page. Essayez une autre URL.');
                         analyzeBtn.disabled = false;
                         analyzeBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Analyze';
                         return;
                     }
 
-                    const productPrice = parseFloat(data.product.price) || 10;
-                    const productName = data.product.title || 'Produit AliExpress';
-                    console.log('5. Prix extrait :', productPrice, 'Nom :', productName);
+                    const productPrice = parseFloat(price) || 10;
+                    const productName = title || 'Produit AliExpress';
 
                     // Récupérer les seuils
                     const goThreshold = parseFloat(thresholdGo?.value) || 30;
@@ -2321,7 +2353,7 @@
                 })
                 .catch(error => {
                     console.error('8. Erreur capturée :', error);
-                    alert('Erreur de connexion au serveur: ' + error.message);
+                    alert('Erreur de scraping: ' + error.message);
                     analyzeBtn.disabled = false;
                     analyzeBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Analyze';
                 });
@@ -2453,7 +2485,7 @@
             });
         });
 
-        console.log('✅ MargeinCheck – Scraper réel activé (version avec logs)');
+        console.log('✅ MargeinCheck – Scraping direct via proxy CORS activé');
     })();
 </script> 
 </body>
